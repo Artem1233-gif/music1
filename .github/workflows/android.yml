@@ -10,41 +10,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '21'
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v4.0.4
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4.0.4
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    # ➕ НОВЫЙ ШАГ: Сборка веб-приложения
-    - name: Build web assets
-      run: npm run build
+      - name: Build web assets
+        run: npm run build
 
-    - name: Add Android platform and Sync
-      run: npx cap add android && npx cap sync android
+      - name: Add Android platform and sync
+        run: npx cap add android && npx cap sync android
 
-    - name: Build APK
-      run: |
-        cd android
-        chmod +x ./gradlew
-        ./gradlew assembleDebug
+      - name: Increase Gradle download timeout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug-apk
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+          path = Path("android/gradle/wrapper/gradle-wrapper.properties")
+          lines = path.read_text().splitlines()
+          lines = [line for line in lines if not line.startswith("networkTimeout=")]
+          lines.append("networkTimeout=600000")
+          path.write_text("\n".join(lines) + "\n")
+          PY
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: moya-muzyka-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
