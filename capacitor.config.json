@@ -1,0 +1,9 @@
+{
+  "appId": "com.moyamuzyka.app",
+  "appName": "Моя Музыка",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true }
+  }
+}
