@@ -11,6 +11,8 @@
     "@capacitor/cli": "^6.1.0",
     "@capacitor/core": "^6.1.0",
     "@capacitor/local-notifications": "^6.0.2",
-    "esbuild": "^0.24.2"
+    "@capacitor-firebase/authentication": "^6.2.0",
+    "esbuild": "^0.24.2",
+    "firebase": "^11.2.0"
   }
 }
